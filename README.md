@@ -4,7 +4,7 @@ This is the pong game built using C and the raylib library.
 ## Raylib Quickstart
 This project uses raylib-quickstart which is a simple cross platform template 
 for setting up a project with the bleeding edge raylib code.
-More info (here)[https://github.com/raylib-extras/raylib-quickstart/tree/main]
+More info [here](https://github.com/raylib-extras/raylib-quickstart/tree/main)
 
 # Building instructions
 
