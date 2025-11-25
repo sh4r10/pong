@@ -405,3 +405,6 @@ Makefile
 *.swp
 *.swo
 *.swn
+
+# Miscellaneous
+compile_commands.json
