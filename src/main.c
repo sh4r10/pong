@@ -2,40 +2,47 @@
 #include "resource_dir.h"
 
 int main () {
-	// Tell the window to use vsync and work on high DPI displays
+	// configs
+	const int WINDOW_WIDTH = 1280;
+	const int WINDOW_HEIGHT = 800;
+
+	const int BORDER_THICKNESS = 10;
+	const int DASH_SIZE = 10;
+	const int DASH_SPACE = 10;
+
+	const int PADDLE_OFFSET = 20;
+	const int PADDLE_WIDTH = 20;
+	const int PADDLE_HEIGHT = 100;
+
+	// use vsync of high DPI displays
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
 
-	// Create the window and OpenGL context
-	InitWindow(1280, 800, "Pong in C");
+	// create window
+	InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Pong in C");
 
-	// Utility function from resource_dir.h to find the resources folder and set it as the current working directory so we can load from it
-	SearchAndSetResourceDir("resources");
+	// game state
+	float ai_paddle_x = PADDLE_OFFSET;
+	float ai_paddle_y = (WINDOW_HEIGHT / 2.0) - (PADDLE_HEIGHT / 2.0);
 
-	// Load a texture from the resources directory
-	Texture wabbit = LoadTexture("wabbit_alpha.png");
+	float player_paddle_x = WINDOW_WIDTH - PADDLE_WIDTH - PADDLE_OFFSET;
+	float player_paddle_y = (WINDOW_HEIGHT / 2.0) - (PADDLE_HEIGHT / 2.0);
 	
-	// game loop
-	while (!WindowShouldClose())		// run the loop until the user presses ESCAPE or presses the Close button on the window
+	// game loop, run until close or escape
+	while (!WindowShouldClose())
 	{
-		// drawing
+		// frame starts
 		BeginDrawing();
-
-		// Setup the back buffer for drawing (clear color and depth buffers)
 		ClearBackground(BLACK);
-
-		// draw some text using the default font
-		DrawText("Hello Shariq", 200,200,20,WHITE);
-
-		// draw our texture to the screen
-		DrawTexture(wabbit, 350, 195, WHITE);
+		// draw stage
+		DrawRectangle(0, 0, WINDOW_WIDTH, BORDER_THICKNESS, WHITE);
+		DrawRectangle(0, WINDOW_HEIGHT-BORDER_THICKNESS, WINDOW_WIDTH, BORDER_THICKNESS, WHITE);
+		DrawLineDashed((Vector2) {WINDOW_WIDTH/2.0, 0.0}, (Vector2) {WINDOW_WIDTH/2.0, WINDOW_HEIGHT*1.0}, DASH_SIZE, DASH_SPACE, WHITE);
 		
-		// end the frame and get ready for the next one  (display frame, poll input, etc...)
+		DrawRectangle(ai_paddle_x, ai_paddle_y, PADDLE_WIDTH, PADDLE_HEIGHT, WHITE);
+		DrawRectangle(player_paddle_x, player_paddle_y, PADDLE_WIDTH, PADDLE_HEIGHT, WHITE);
+		// frame ends
 		EndDrawing();
 	}
-
-	// cleanup
-	// unload our texture so it can be cleaned up
-	UnloadTexture(wabbit);
 
 	// destroy the window and cleanup the OpenGL context
 	CloseWindow();
