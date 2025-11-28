@@ -55,6 +55,11 @@ int main () {
 	// game loop, run until close or escape
 	while (!WindowShouldClose())
 	{
+		if(IsKeyDown(KEY_ENTER)){
+			ai_score = 0;
+			player_score = 0;
+		}
+
 		while(ai_score < POINTS_TO_WIN && player_score < POINTS_TO_WIN){
 			bool point_scored = false;
 			// game state
@@ -75,7 +80,7 @@ int main () {
 
 			Vector2 ball_slope = {
 				GetRandomValue(0, 1) ? BALL_SPEED : -BALL_SPEED,
-				GetRandomValue(-1*MAX_BALL_SLOPE, MAX_BALL_SLOPE)
+				GetRandomValue(-1*MAX_BALL_SLOPE/4, MAX_BALL_SLOPE/4)
 			};
 
 			while(!point_scored){
@@ -188,6 +193,20 @@ int main () {
 			}
 			WaitTime(1);
 		}
+
+		// print game over screen
+		BeginDrawing();
+		ClearBackground(BLACK);
+
+		DrawText("GAME OVER", (WINDOW_WIDTH/2) - 240, (WINDOW_HEIGHT/2)-140, 80, WHITE);
+		if(ai_score == POINTS_TO_WIN){
+			DrawText("AI Wins", (WINDOW_WIDTH/2) - 120, (WINDOW_HEIGHT/2) - 40, 60, WHITE);
+		} else {
+			DrawText("You Win", (WINDOW_WIDTH/2) - 120, (WINDOW_HEIGHT/2) - 40, 60, WHITE);
+		}
+		DrawText("Press esc to exit or enter to play again", (WINDOW_WIDTH/2) - 200, (WINDOW_HEIGHT/2) + 40, 20, GRAY);
+		
+		EndDrawing();
 	}
 
 	// destroy the window and cleanup the OpenGL context
