@@ -143,20 +143,24 @@ int main () {
 	while (!WindowShouldClose())
 	{
 		if(game_state.game_status == OVER && IsKeyDown(KEY_ENTER)){
+			TraceLog(LOG_DEBUG, "Game state: Over, User pressed Enter, resetting state");
 			game_state = get_initial_state();
 			continue;
 		} else if(game_state.game_status == OVER) {
+			TraceLog(LOG_DEBUG, "Game state: Over, Awaiting user input");
 			draw_game_over_screen(game_state.player_score, game_state.ai_score);
 			continue;
 		}
 
 		if(game_state.ai_score == POINTS_TO_WIN || game_state.player_score == POINTS_TO_WIN){
+			TraceLog(LOG_DEBUG, "One of the players has won, showing game over screen");
 			draw_game_over_screen(game_state.player_score, game_state.ai_score);
 			game_state.game_status = OVER;
 			continue;
 		}
 
 		if(game_state.game_status == RESET){
+			TraceLog(LOG_DEBUG, "Point scored, waiting 1 second to reset stage");
 			WaitTime(1);
 			game_state = reset_state_for_new_point(game_state);
 			continue;
@@ -233,11 +237,13 @@ int main () {
 		if(game_state.ball_pos.x > WINDOW_WIDTH + BALL_RADIUS){
 			game_state.ai_score += 1;
 			game_state.game_status = RESET;
+			TraceLog(LOG_DEBUG, "Point scored by AI, setting game_state to RESET");
 		}
 
 		if(game_state.ball_pos.x < -BALL_RADIUS){
 			game_state.player_score += 1;
 			game_state.game_status = RESET;
+			TraceLog(LOG_DEBUG, "Point scored by Player, setting game_state to RESET");
 		}
 
 		// frame starts
