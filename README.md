@@ -6,6 +6,10 @@ This project uses raylib-quickstart which is a simple cross platform template
 for setting up a project with the bleeding edge raylib code.
 More info [here](https://github.com/raylib-extras/raylib-quickstart/tree/main)
 
+## Final Product
+The final game looks something like this
+![](images/game.png)
+
 # Building instructions
 
 ## Linux Users
