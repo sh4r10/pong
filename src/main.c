@@ -130,12 +130,18 @@ void draw_game_over_screen(int player_score, int ai_score){
 int main () {
 	// use vsync of high DPI displays
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
+	SetTargetFPS(60);
 
 	// Debugging
 	// SetTraceLogLevel(LOG_DEBUG);
 
 	// create window
 	InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Pong in C");
+
+	// audio configs
+	InitAudioDevice();
+	Sound ball_hit_sound = LoadSound("resources/ball_hit.ogg");
+	Sound point_scored_sound = LoadSound("resources/point_scored.ogg");
 
 	struct GameState game_state = get_initial_state();
 
@@ -220,27 +226,32 @@ int main () {
 		); 
 		
 		if(is_colliding_top_border || is_colliding_bottom_border){
+			PlaySound(ball_hit_sound);
 			game_state.ball_slope.y *= -1;
 		}
 
 		if(is_colliding_player_paddle){
+			PlaySound(ball_hit_sound);
 			game_state.ball_slope.y = get_collision_angle(game_state.player_paddle, game_state.ball_pos);
 			game_state.ball_slope.x *= -1;
 		}
 
 		if(is_colliding_ai_paddle){
+			PlaySound(ball_hit_sound);
 			game_state.ball_slope.y = get_collision_angle(game_state.ai_paddle, game_state.ball_pos);
 			game_state.ball_slope.x *= -1;
 		}
 
 		// check point scored
 		if(game_state.ball_pos.x > WINDOW_WIDTH + BALL_RADIUS){
+			PlaySound(point_scored_sound);
 			game_state.ai_score += 1;
 			game_state.game_status = RESET;
 			TraceLog(LOG_DEBUG, "Point scored by AI, setting game_state to RESET");
 		}
 
 		if(game_state.ball_pos.x < -BALL_RADIUS){
+			PlaySound(point_scored_sound);
 			game_state.player_score += 1;
 			game_state.game_status = RESET;
 			TraceLog(LOG_DEBUG, "Point scored by Player, setting game_state to RESET");
@@ -275,6 +286,9 @@ int main () {
 		EndDrawing();
 	}
 	// destroy the window and cleanup the OpenGL context
+	UnloadSound(ball_hit_sound);
+	UnloadSound(point_scored_sound);
+	CloseAudioDevice();
 	CloseWindow();
 	return 0;
 }
