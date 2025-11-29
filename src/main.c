@@ -21,7 +21,8 @@ const int BALL_SPEED = 15;
 const int MAX_BALL_SLOPE = 15;
 
 const int FONT_SIZE = 20;
-const int TEXT_DISTANCE = 150;
+const int TEXT_DISTANCE = 50;
+const int SCORE_BOX = 400;
 
 enum GameStatus {
 	RUNNING,
@@ -37,6 +38,11 @@ struct GameState {
 	int player_score;
 	int ai_score;
 	enum GameStatus game_status;
+};
+
+struct RenderState {
+	int text_width;
+	int score_width;
 	char score_string[2];
 };
 
@@ -112,17 +118,29 @@ float get_collision_angle(Vector2 paddle_pos, Vector2 ball_pos){
 	return (percentage_diff+variation) * -MAX_BALL_SLOPE;
 }
 
+// returns the starting coordinates for text at a given font size
+int center_text_on_screen(char *text, int font_size){
+	int text_width = MeasureText(text, font_size);
+	return (WINDOW_WIDTH - text_width) / 2;
+}
+
 void draw_game_over_screen(int player_score, int ai_score){
 	BeginDrawing();
 	ClearBackground(BLACK);
 
-	DrawText("GAME OVER", (WINDOW_WIDTH/2) - 240, (WINDOW_HEIGHT/2)-140, 80, WHITE);
+	DrawText("GAME OVER", center_text_on_screen("GAME_OVER", 80), (WINDOW_HEIGHT/2)-140, 80, WHITE);
 	if(ai_score == POINTS_TO_WIN){
-		DrawText("AI Wins", (WINDOW_WIDTH/2) - 120, (WINDOW_HEIGHT/2) - 40, 60, WHITE);
+		DrawText("AI Wins", center_text_on_screen("AI Wins", 60), (WINDOW_HEIGHT/2) - 40, 60, WHITE);
 	} else {
-		DrawText("You Win", (WINDOW_WIDTH/2) - 120, (WINDOW_HEIGHT/2) - 40, 60, WHITE);
+		DrawText("You Win", center_text_on_screen("You Win", 60), (WINDOW_HEIGHT/2) - 40, 60, WHITE);
 	}
-	DrawText("Press esc to exit or enter to play again", (WINDOW_WIDTH/2) - 200, (WINDOW_HEIGHT/2) + 40, 20, GRAY);
+	DrawText(
+		"Press esc to exit or enter to play again", 
+		center_text_on_screen("Press esc to exit or enter to play again", 20),
+		(WINDOW_HEIGHT/2) + 40, 
+		20,
+		GRAY
+	);
 	
 	EndDrawing();
 }
@@ -144,6 +162,7 @@ int main () {
 	Sound point_scored_sound = LoadSound("resources/point_scored.ogg");
 
 	struct GameState game_state = get_initial_state();
+	struct RenderState render_state = {0};
 
 	// game loop, run until close or escape
 	while (!WindowShouldClose())
@@ -267,13 +286,44 @@ int main () {
 		DrawLineDashed((Vector2) {WINDOW_WIDTH/2.0, 0.0}, (Vector2) {WINDOW_WIDTH/2.0, WINDOW_HEIGHT*1.0}, DASH_SIZE, DASH_SPACE, WHITE);
 
 		// draw scoreboard
-		sprintf(game_state.score_string, "%d", game_state.ai_score);
-		DrawText("COMPUTER", (WINDOW_WIDTH/2) - TEXT_DISTANCE, BORDER_THICKNESS*4, FONT_SIZE, GRAY);
-		DrawText(game_state.score_string, (WINDOW_WIDTH/2) - TEXT_DISTANCE + 45, BORDER_THICKNESS*8, FONT_SIZE*4, GRAY);
+		sprintf(render_state.score_string, "%d", game_state.ai_score);
 
-		sprintf(game_state.score_string, "%d", game_state.player_score);
-		DrawText("PLAYER", (WINDOW_WIDTH/2) + TEXT_DISTANCE/4, BORDER_THICKNESS*4, FONT_SIZE, GRAY);
-		DrawText(game_state.score_string, (WINDOW_WIDTH/2) + TEXT_DISTANCE/4 + 25, BORDER_THICKNESS*8, FONT_SIZE*4, GRAY);
+		render_state.text_width = MeasureText("COMPUTER", FONT_SIZE);
+		DrawText(
+			"COMPUTER",
+			(WINDOW_WIDTH/2)-render_state.text_width-TEXT_DISTANCE,
+			BORDER_THICKNESS*4,
+			FONT_SIZE,
+			GRAY
+		);
+
+		render_state.score_width = MeasureText(render_state.score_string, FONT_SIZE*4);
+		DrawText(
+			render_state.score_string,
+			(WINDOW_WIDTH/2)-TEXT_DISTANCE-(render_state.text_width/2)-(render_state.score_width/2),
+			BORDER_THICKNESS*8,
+			FONT_SIZE*4, 
+			GRAY
+		);
+
+		sprintf(render_state.score_string, "%d", game_state.player_score);
+
+		render_state.text_width = MeasureText("PLAYER", FONT_SIZE);
+		DrawText("PLAYER",
+			(WINDOW_WIDTH/2)+TEXT_DISTANCE,
+			BORDER_THICKNESS*4,
+			FONT_SIZE, 
+			GRAY
+		);
+
+		render_state.score_width = MeasureText(render_state.score_string, FONT_SIZE*4);
+		DrawText(
+			render_state.score_string,
+			(WINDOW_WIDTH/2)+TEXT_DISTANCE+(render_state.text_width/2)-(render_state.score_width/2),
+			BORDER_THICKNESS*8,
+			FONT_SIZE*4,
+			GRAY
+		);
 
 		// draw player paddles
 		DrawRectangle(game_state.ai_paddle.x, game_state.ai_paddle.y, PADDLE_WIDTH, PADDLE_HEIGHT, WHITE);
