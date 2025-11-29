@@ -22,7 +22,6 @@ const int MAX_BALL_SLOPE = 15;
 
 const int FONT_SIZE = 20;
 const int TEXT_DISTANCE = 50;
-const int SCORE_BOX = 400;
 
 enum GameStatus {
 	RUNNING,
