@@ -75,30 +75,20 @@ struct GameState get_initial_state(){
 	return game_state;
 }
 
-struct GameState reset_state_for_new_point(struct GameState game_state){
-	game_state.game_status= RUNNING;
+void reset_state_for_new_point(struct GameState *game_state){
+	game_state->game_status= RUNNING;
 
-	game_state.ai_paddle = (Vector2){
-		(float)PADDLE_OFFSET,
-		(WINDOW_HEIGHT / 2.0) - (PADDLE_HEIGHT / 2.0)
-	};
+	game_state->ai_paddle.x = (float)PADDLE_OFFSET;
+	game_state->ai_paddle.y = (WINDOW_HEIGHT / 2.0) - (PADDLE_HEIGHT / 2.0);
 
-	game_state.player_paddle = (Vector2){
-		(float)WINDOW_WIDTH - PADDLE_WIDTH - PADDLE_OFFSET,
-		(WINDOW_HEIGHT / 2.0) - (PADDLE_HEIGHT / 2.0)
-	};
+	game_state->player_paddle.x = (float)WINDOW_WIDTH - PADDLE_WIDTH - PADDLE_OFFSET;
+	game_state->player_paddle.y = (WINDOW_HEIGHT / 2.0) - (PADDLE_HEIGHT / 2.0);
 
-	game_state.ball_pos = (Vector2){
-		WINDOW_WIDTH/2.0,
-		WINDOW_HEIGHT/2.0
-	};
+	game_state->ball_pos.x = WINDOW_WIDTH/2.0;
+	game_state->ball_pos.y = WINDOW_HEIGHT/2.0;
 
-	game_state.ball_slope = (Vector2){
-		GetRandomValue(0, 1) ? BALL_SPEED : -BALL_SPEED,
-		GetRandomValue(-1*MAX_BALL_SLOPE/4, MAX_BALL_SLOPE/4)
-	};
-
-	return game_state;
+	game_state->ball_slope.x = GetRandomValue(0, 1) ? BALL_SPEED : -BALL_SPEED;
+	game_state->ball_slope.y = GetRandomValue(-1*MAX_BALL_SLOPE/4, MAX_BALL_SLOPE/4);
 }
 
 bool is_ball_colliding_with_box(Vector2 box_pos, Vector2 box_dimensions, Vector2 ball_pos){
@@ -186,18 +176,18 @@ int main () {
 		if(game_state.game_status == RESET){
 			TraceLog(LOG_DEBUG, "Point scored, waiting 1 second to reset stage");
 			WaitTime(1);
-			game_state = reset_state_for_new_point(game_state);
+			reset_state_for_new_point(&game_state);
 			continue;
 		}
 
-		if(IsKeyDown(KEY_J)){
+		if(IsKeyDown(KEY_DOWN)){
 			// check if would hit border
 			if(game_state.player_paddle.y < WINDOW_HEIGHT - BORDER_THICKNESS - PADDLE_HEIGHT){
 				bool hitting_edge = game_state.player_paddle.y + PLAYER_MOVEMENT_INTERVAL > WINDOW_HEIGHT - BORDER_THICKNESS - PADDLE_HEIGHT;
 				game_state.player_paddle.y = hitting_edge ? WINDOW_HEIGHT - BORDER_THICKNESS - PADDLE_HEIGHT : game_state.player_paddle.y + PLAYER_MOVEMENT_INTERVAL;
 			}
 		}
-		if(IsKeyDown(KEY_K)){
+		if(IsKeyDown(KEY_UP)){
 			// check if would hit border
 			if(game_state.player_paddle.y > BORDER_THICKNESS){
 				bool hitting_edge = game_state.player_paddle.y - PLAYER_MOVEMENT_INTERVAL < BORDER_THICKNESS;
