@@ -117,7 +117,7 @@ void draw_game_over_screen(int player_score, int ai_score){
 	BeginDrawing();
 	ClearBackground(BLACK);
 
-	DrawText("GAME OVER", center_text_on_screen("GAME_OVER", 80), (WINDOW_HEIGHT/2)-140, 80, WHITE);
+	DrawText("GAME OVER", center_text_on_screen("GAME OVER", 80), (WINDOW_HEIGHT/2)-140, 80, WHITE);
 	if(ai_score == POINTS_TO_WIN){
 		DrawText("AI Wins", center_text_on_screen("AI Wins", 60), (WINDOW_HEIGHT/2) - 40, 60, WHITE);
 	} else {
